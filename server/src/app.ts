@@ -5,7 +5,7 @@ import sequelize from './models/model';
 import cors from 'cors';
 import path from 'path'; 
 import fs from 'fs'; 
-import router from './routers';
+import router from './controllers/routers';
 
 // creating a new express app instance:
 const app: Application = express();
