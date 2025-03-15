@@ -4,9 +4,9 @@ import sequelize from "./model";
 interface UserAttributes {
   id: bigint,
   name: string,
-  location: string,
+  location: string, //TODO: discuss how to store location of user 
   description: string,
-  image: string
+  image: string // TODO: User image possible?
 }
 
 class User extends Model<UserAttributes> implements UserAttributes {
@@ -35,7 +35,7 @@ User.init(
     },
     description: {
       type: DataTypes.STRING,
-      allowNull: false,
+      allowNull: true,
     },
     image: {
       type: DataTypes.STRING,
