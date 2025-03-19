@@ -1,5 +1,4 @@
 import express, { Request, Response, Router } from 'express';
-import User from '../models/userModel';
 import uploadDirectory from '../app';
 import multer from 'multer';
 import Runner from '../models/runnerModel';
@@ -7,8 +6,6 @@ import sequelize from '../models/model';
 import { QueryTypes } from 'sequelize';
 
 const router: Router = express.Router();
-
-// Defining routes for the User: 
 
 // get all the runners stored in the database
 router.get('/runner', async (req: Request, res: Response) => {
@@ -21,8 +18,35 @@ router.get('/runner', async (req: Request, res: Response) => {
     }
 });
 
+// GPS HANDLING: 
+//(POST) safe new position of user to database
+
+router.post('/runner', async (req: Request, res: Response) => {
+    try {
+        // error handling if any required parameter is missing as an input from the user
+        const missingParameters = [];
+        if (!req.body.id) missingParameters.push('id');
+        if (!req.body.longitude) missingParameters.push('longitude');
+        if (!req.body.latitude) missingParameters.push('latitude');
+
+        if (missingParameters.length > 0) {
+            res.status(400).json({
+                error: 'Missing some required data',
+                missingParameters
+            });
+            // if no parameters is missing, new NPC is created   
+        } else {
+            const runner = await Runner.create(req.body);
+            await runner.save();
+            res.status(201).json(runner);
+        }
+    } catch (error) {
+        res.status(500).json(error);
+    }
+});
+
 // FIND RUNNERS NEARBY: 
-// (GET): get all nearby runners from the database
+// (GET): get all nearby runners from the database using stored function from postgresql
 router.get('/nearby/:id/:distance', async (req: Request, res: Response) => {
     const runnerId = req.params.id;
     const distance = req.params.distance;
@@ -43,15 +67,18 @@ router.get('/nearby/:id/:distance', async (req: Request, res: Response) => {
         });
 })
 
+// RUNNING ROUTES
+// (POST): add a new run to the database
+
+// (DELETE): remove run from the database
+// (PUT): edit an already existing run
+
 // CHAT: 
 // (GET): get all messages from the database
 // (POST): add a message to the chat
 // (PUT): edit a message
 
-// RUNNING ROUTES
-// (POST): add a new run to the database
-// (DELETE): remove run from the database
-// (PUT): edit an already existing run
+
 
 // PROFILE:
 // (GET): show all data stored under user id
